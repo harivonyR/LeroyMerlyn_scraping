@@ -17,6 +17,8 @@ def website_crawler(site_url):
     querystring = {"query":site_url}
     
     response = requests.request("GET", url, headers=headers,params=querystring)
+    
+         
     clean_html = response.text.encode('utf-8').decode('unicode_escape')
     
     return clean_html
