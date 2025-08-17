@@ -64,7 +64,7 @@ def debug():
     # redering OK
     LeroyMerlin = "https://www.leroymerlin.fr/produits/terrasse-jardin/cloture-grillage-occultation/"
 
-    response = website_rendering(site_url=LeroyMerlin,scroll=2)
+    response = website_crawler(site_url=LeroyMerlin)
     
     
     print(response)
