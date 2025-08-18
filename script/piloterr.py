@@ -18,9 +18,12 @@ def website_crawler(site_url):
     
     response = requests.request("GET", url, headers=headers,params=querystring)
     
-         
+    # decode double escape "\\" and inline "\n" 
     clean_html = response.text.encode('utf-8').decode('unicode_escape')
     
+    # decode special character 
+    clean_html = clean_html.encode('latin-1').decode('utf-8')
+   
     return clean_html
 
 

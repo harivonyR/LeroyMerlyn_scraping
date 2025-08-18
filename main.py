@@ -26,3 +26,4 @@ pages_link = get_pages(sub_categories[0])
 
 # get items from pages_link
 items_list = get_items(pages_link[0])
+
