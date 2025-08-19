@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 import time
 
 
-def get_products(url="https://www.leroymerlin.fr/produits/", retries=3, delay=10):
+def get_products(url="https://www.leroymerlin.fr/produits/", retries=4, delay=15):
     """
     Fetch product links with retry mechanism :
         - Attempt scraping until link are fetched,
@@ -29,10 +29,10 @@ def get_products(url="https://www.leroymerlin.fr/produits/", retries=3, delay=10
             ]
 
             if links:
-                print(f"{url} : {len(links)} products found")
+                print(f"{url} : {len(links)} products found\n")
                 return links
             else:
-                raise ValueError("No product links found")
+                raise ValueError("[error] : No product links found\n")
         
         except Exception as e:
             if attempt < retries:
@@ -41,12 +41,12 @@ def get_products(url="https://www.leroymerlin.fr/produits/", retries=3, delay=10
                 time.sleep(delay)
             else:
                 raise ValueError(
-                    f" [Attempt] : failed fetch product links after {retries} attempts. Last error: {e}"
+                    f" [Failed] : attempt failed, fetch product links error after {retries} attempts. Last error: {e}"
                 )
 
 
 # sub_categories_url = "https://www.leroymerlin.fr/produits/terrasse-jardin/salon-et-mobilier-de-jardin/salon-de-jardin/"
-def get_pages(sub_categories_url,retries=3,delay=10):
+def get_pages(sub_categories_url,retries=4, delay=15):
     print("---------------------------------------")
     print(f"scraping pages of : {sub_categories_url}")
     
