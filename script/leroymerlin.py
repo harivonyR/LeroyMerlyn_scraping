@@ -101,6 +101,7 @@ def safe_get(item, selector, attr=None, default=""):
         return default
     if attr:
         return tag.get(attr, default)
+    
     return tag.get_text(strip=True)
 
 
@@ -130,7 +131,10 @@ def get_items(page_url,retries=3,delay=10):
                     "delivery": safe_get(item, ("span", {"class": "stock-status_label"})),
                     "discount": safe_get(item, ("span", {"class": "a-flag__label"})),
                     "old_price": safe_get(item, ("span", {"class": "m-price__line","data-cerberus":"CROSSED_PRICE"})),
-                    "price" : safe_get(item, ("span", {"class": "m-price__line","data-cerberus":"ELEM_PRIX"}))
+                    "price" : safe_get(item, ("span", {"class": "m-price__line","data-cerberus":"ELEM_PRIX"})),
+                    "price_info": safe_get(item, ("div", {"class": "m-price__legals"})),
+                    "stock": safe_get(item, ("span", {"class": "stock-status_label"})),
+                    "picture": safe_get(item, ("picture", {"data-class": "a-illustration__img"}),"data-iesrc")
                 }
                 items_list.append(data)
                 
