@@ -7,6 +7,7 @@ Created on Sat Aug 16 16:45:08 2025
 
 from script.piloterr import website_crawler
 from bs4 import BeautifulSoup
+from script.util import get_last_path_parts
 import time
 
 
@@ -121,6 +122,8 @@ def get_items(page_url,retries=3,delay=10):
             # 1- check how many options there is in the "pagination field"
             # 2- build link with pagination as get parameters
             items_list = []
+            
+            scraping_url = get_last_path_parts(page_url)
 
             for i in range(len(items)):
                 item = items[i]
@@ -134,7 +137,10 @@ def get_items(page_url,retries=3,delay=10):
                     "price" : safe_get(item, ("span", {"class": "m-price__line","data-cerberus":"ELEM_PRIX"})),
                     "price_info": safe_get(item, ("div", {"class": "m-price__legals"})),
                     "stock": safe_get(item, ("span", {"class": "stock-status_label"})),
-                    "picture": safe_get(item, ("picture", {"data-class": "a-illustration__img"}),"data-iesrc")
+                    "picture": safe_get(item, ("picture", {"data-class": "a-illustration__img"}),"data-iesrc"),
+                    "product":scraping_url[1],
+                    "categories":scraping_url[2],
+                    "sub_categories":scraping_url[3]
                 }
                 items_list.append(data)
                 
