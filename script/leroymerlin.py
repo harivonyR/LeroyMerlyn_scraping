@@ -106,7 +106,7 @@ def safe_get(item, selector, attr=None, default=""):
     return tag.get_text(strip=True)
 
 
-# page_url = "https://www.leroymerlin.fr/produits/terrasse-jardin/salon-et-mobilier-de-jardin/salon-de-jardin/?p=1"
+# page_url = "https://www.leroymerlin.fr/marques/naterial/salon-et-mobilier-de-jardin-naterial/?p=1"
 def get_items(page_url,retries=3,delay=10):
     print("------------------")
     print(f"scraping pages of : {page_url}")
@@ -138,9 +138,9 @@ def get_items(page_url,retries=3,delay=10):
                     "price_info": safe_get(item, ("div", {"class": "m-price__legals"})),
                     "stock": safe_get(item, ("span", {"class": "stock-status_label"})),
                     "picture": safe_get(item, ("picture", {"data-class": "a-illustration__img"}),"data-iesrc"),
-                    "product":scraping_url[1],
-                    "categories":scraping_url[2],
-                    "sub_categories":scraping_url[3]
+                    "product": scraping_url[1] if len(scraping_url) > 1 else "",
+                    "categories": scraping_url[2] if len(scraping_url) > 2 else "",
+                    "sub_categories": scraping_url[3] if len(scraping_url) > 3 else ""
                 }
                 items_list.append(data)
                 
@@ -164,6 +164,11 @@ def get_items(page_url,retries=3,delay=10):
                 )
 
 if __name__ == "__main__":
-    product_url = "https://www.leroymerlin.fr/produits/terrasse-jardin/cloture-grillage-occultation/"
-    categories = get_products(product_url)
+    #product_url = "https://www.leroymerlin.fr/produits/terrasse-jardin/cloture-grillage-occultation/"
+    #categories = get_products(product_url)
+    
+    # debug
+    #items_url = "https://www.leroymerlin.fr/marques/naterial/salon-et-mobilier-de-jardin-naterial/?p=1"
+    items_url ="https://www.leroymerlin.fr/produits/terrasse-jardin/salon-et-mobilier-de-jardin/decouvrez-nos-styles-exterieurs/"
+    items = get_items(items_url)
     
