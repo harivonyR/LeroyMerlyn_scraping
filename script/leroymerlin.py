@@ -5,7 +5,7 @@ Created on Sat Aug 16 16:45:08 2025
 @author: BEST
 """
 
-from script.piloterr import website_crawler
+from script.piloterr import website_crawler, website_unlocker
 from bs4 import BeautifulSoup
 from script.util import get_last_path_parts, is_html
 import time
@@ -20,7 +20,8 @@ def get_products(url="https://www.leroymerlin.fr/produits/", retries=4, delay=15
     
     for attempt in range(1, retries + 1):
         try:
-            html_content = website_crawler(url)
+            #html_content = website_crawler(url)
+            html_content = website_unlocker(url)
             soup = BeautifulSoup(html_content, "html.parser")
 
             links = [
@@ -65,7 +66,9 @@ def get_pages(sub_categories_url, retries=4, delay=15):
     
     for attempt in range(1, retries + 1):     
         try:
-            html_content = website_crawler(sub_categories_url)
+            
+            #html_content = website_crawler(sub_categories_url)
+            html_content = website_unlocker(sub_categories_url)
             
             soup = BeautifulSoup(html_content, "html.parser")
             selects = soup.select('select.mc-select.mc-pagination__select.js-selector option')
@@ -124,7 +127,8 @@ def get_items(page_url,retries=3,delay=10):
     for attempt in range(1, retries + 1):
         
         try:
-            html_content = website_crawler(page_url)
+            #html_content = website_crawler(page_url)
+            html_content = website_unlocker(page_url)
             soup = BeautifulSoup(html_content, "html.parser")
 
             items = soup.select('li>article')
@@ -139,6 +143,7 @@ def get_items(page_url,retries=3,delay=10):
                 item = items[i]
                 data = {
                     "title": safe_get(item, ("a", {"class": "a-designation"}), "title"),
+                    "href":"https://www.leroymerlin.fr"+safe_get(item, ("a", {"class": "a-designation"}), "href"),
                     "vendor": safe_get(item, ("span", {"class": "a-vendor__name"})),
                     "reviews": safe_get(item, ("span", {"class": "mc-stars-result__text"})),
                     "delivery": safe_get(item, ("span", {"class": "stock-status_label"})),

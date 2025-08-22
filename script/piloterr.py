@@ -26,6 +26,25 @@ def website_crawler(site_url):
    
     return clean_html
 
+# data dom bypassing
+def website_unlocker(site_url):
+    url = "https://piloterr.com/api/v2/website/webunlocker"
+    
+    headers = {"x-api-key": x_api_key}
+    querystring = {"query":site_url}
+    
+    response = requests.request("GET", url, headers=headers,params=querystring)
+    
+    # decode double escape "\\" and inline "\n" 
+    clean_html = response.text.encode('utf-8').decode('unicode_escape')
+    
+    # decode special character 
+    clean_html = clean_html.encode('latin-1').decode('utf-8')
+   
+    return clean_html
+        
+    
+    
 
 def website_rendering(site_url, wait_in_seconds=5, scroll=0):
     """
@@ -71,11 +90,14 @@ def website_rendering(site_url, wait_in_seconds=5, scroll=0):
 
     
 if __name__ == "__main__":
-    # redering OK
-    LeroyMerlin = "https://www.leroymerlin.fr/produits/terrasse-jardin/cloture-grillage-occultation/"
-
-    response = website_crawler(site_url=LeroyMerlin)
+    # fetch sub_categories page
+    #LeroyMerlin = "https://www.leroymerlin.fr/produits/terrasse-jardin/cloture-grillage-occultation/"
+    #response = website_crawler(LeroyMerlin)
     
+    
+    #  web unlocker request
+    page_url = "https://www.leroymerlin.fr/produits/terrasse-jardin/cloture-grillage-occultation/grillage/?p=9"
+    response = website_unlocker(page_url)
     
     #print(response)
     #save_html(response,r"sample/rendering_home.html")
