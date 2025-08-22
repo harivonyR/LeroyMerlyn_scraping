@@ -63,14 +63,9 @@ def get_pages(sub_categories_url, retries=4, delay=15):
     print("---------------------------------------")
     print(f"Scraping pages of: {sub_categories_url}")
     
-    for attempt in range(1, retries + 1):
-        got_response = False  # True if HTML content is fetched, even if no pagination is found
-        
+    for attempt in range(1, retries + 1):     
         try:
             html_content = website_crawler(sub_categories_url)
-            
-            if is_html(html_content): 
-                got_response = True
             
             soup = BeautifulSoup(html_content, "html.parser")
             selects = soup.select('select.mc-select.mc-pagination__select.js-selector option')
@@ -87,21 +82,15 @@ def get_pages(sub_categories_url, retries=4, delay=15):
             return []
         
         except Exception as e:
-            if got_response:
-                # Response received but pagination missing
-                
-                return []
-            
-            elif attempt < retries:
+
+            if attempt < retries:
                 print(f"[Attempt {attempt}] failed: {e}")
                 print(f"[Retrying] in {delay}s (attempt {attempt+1}/{retries})")
                 time.sleep(delay)
                 
             else:
-                raise ValueError(
-                    f"[Failed] Could not fetch product links after {retries} attempts. Last error: {e}"
-                )
-
+                print(f"[Failed] Could not fetch product links after {retries} attempts. Last error: {e}")
+                return []
 
 # we need safe_get since items can have some missing information
 def safe_get(item, selector, attr=None, default=""):

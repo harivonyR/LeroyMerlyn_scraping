@@ -45,14 +45,4 @@ for i in range(len(products_link)):
             
             # scrape items if sub_categories doesn't have pagination
             else :
-                scraping_url = get_last_path_parts(sub_categories[k])
-
-                output_filename = f"output/{scraping_url[0]}_{scraping_url[1]}_{scraping_url[2]}_page{0}.csv"
-
-                # continue loop if file already scraped
-                if os.path.exists(output_filename):
-                    continue
-
-                # get items from page
-                items_list = get_items(scraping_url)
-                save_csv(items_list, output_filename)
+                continue
