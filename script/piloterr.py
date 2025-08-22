@@ -61,23 +61,23 @@ def website_rendering(site_url, wait_in_seconds=5, scroll=0):
 
         response = requests.post(url, headers=headers, json=instruction)
     
+    # decode double escape "\\" and inline "\n" 
     clean_html = response.text.encode('utf-8').decode('unicode_escape')
+    
+    # decode special character 
+    clean_html = clean_html.encode('latin-1').decode('utf-8')
+    
     return clean_html
 
     
-def debug():
+if __name__ == "__main__":
     # redering OK
     LeroyMerlin = "https://www.leroymerlin.fr/produits/terrasse-jardin/cloture-grillage-occultation/"
 
     response = website_crawler(site_url=LeroyMerlin)
     
     
-    print(response)
-    save_html(response,r"sample/rendering_home.html")
+    #print(response)
+    #save_html(response,r"sample/rendering_home.html")
     
     print("test ends !")
-    pass
-
-
-if __name__ == "__main__":
-    debug()

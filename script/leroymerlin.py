@@ -7,7 +7,7 @@ Created on Sat Aug 16 16:45:08 2025
 
 from script.piloterr import website_crawler
 from bs4 import BeautifulSoup
-from script.util import get_last_path_parts
+from script.util import get_last_path_parts, is_html
 import time
 
 
@@ -46,41 +46,62 @@ def get_products(url="https://www.leroymerlin.fr/produits/", retries=4, delay=15
                 )
 
 
+
 # sub_categories_url = "https://www.leroymerlin.fr/produits/terrasse-jardin/salon-et-mobilier-de-jardin/salon-de-jardin/"
-def get_pages(sub_categories_url,retries=4, delay=15):
+def get_pages(sub_categories_url, retries=4, delay=15):
+    """
+    Scrape pagination links for a given subcategory URL.
+    
+    Returns:
+        list: A list of page URLs if pagination exists.
+        []  : If HTML response is fetched but no pagination found.
+    
+    Raises:
+        ValueError: If no response is received within the given retries.
+    """
+    
     print("---------------------------------------")
-    print(f"scraping pages of : {sub_categories_url}")
+    print(f"Scraping pages of: {sub_categories_url}")
     
     for attempt in range(1, retries + 1):
+        got_response = False  # True if HTML content is fetched, even if no pagination is found
         
         try:
             html_content = website_crawler(sub_categories_url)
+            
+            if is_html(html_content): 
+                got_response = True
+            
             soup = BeautifulSoup(html_content, "html.parser")
-
             selects = soup.select('select.mc-select.mc-pagination__select.js-selector option')
             
-            # 1- check how many options there is in the "pagination field"
-            # 2- build link with pagination as get parameters
-            options = [f"{sub_categories_url}?p={i+1}" for i in range(len(selects)) if selects]
+            # Build links with pagination if options exist
+            options = [f"{sub_categories_url}?p={i+1}" for i in range(len(selects))] if selects else []
             
             if options:
-                print(f"{sub_categories_url} : {len(options)} pages found\n\n")
-                
+                print(f"{sub_categories_url} : {len(options)} pages found\n")
                 return options
             
-            else:
-                raise ValueError("No product links found")
+            # No pagination found but response was valid
+            print('> reponse html but no pagination found !')
+            return []
         
         except Exception as e:
-            if attempt < retries:
-                print(f"[Attempt] : {attempt} failed : {e}")
-                print(f"[Retrying] : (waiting {delay}s before attempt {attempt+1})")
+            if got_response:
+                # Response received but pagination missing
+                
+                return []
+            
+            elif attempt < retries:
+                print(f"[Attempt {attempt}] failed: {e}")
+                print(f"[Retrying] in {delay}s (attempt {attempt+1}/{retries})")
                 time.sleep(delay)
                 
             else:
                 raise ValueError(
-                    f" [Attempt] : failed fetch product links after {retries} attempts. Last error: {e}"
+                    f"[Failed] Could not fetch product links after {retries} attempts. Last error: {e}"
                 )
+
 
 # we need safe_get since items can have some missing information
 def safe_get(item, selector, attr=None, default=""):
@@ -153,22 +174,27 @@ def get_items(page_url,retries=3,delay=10):
                 raise ValueError("[!] No item found ! ")
         
         except Exception as e:
-            if attempt < retries:
-                print(f"[Attempt] : {attempt} failed : {e}")
-                print(f"[Retrying] : (waiting {delay}s before attempt {attempt+1})")
-                time.sleep(delay)
-                
-            else:
-                raise ValueError(
-                    f" [Attempt] : failed fetch product links after {retries} attempts. Last error: {e}"
-                )
+            # Skip current item and continue
+            print(f"[!] Skipping url {page_url} {i} due to error: {e}")
+            continue
 
 if __name__ == "__main__":
     #product_url = "https://www.leroymerlin.fr/produits/terrasse-jardin/cloture-grillage-occultation/"
     #categories = get_products(product_url)
     
-    # debug
     #items_url = "https://www.leroymerlin.fr/marques/naterial/salon-et-mobilier-de-jardin-naterial/?p=1"
-    items_url ="https://www.leroymerlin.fr/produits/terrasse-jardin/salon-et-mobilier-de-jardin/decouvrez-nos-styles-exterieurs/"
-    items = get_items(items_url)
+    
+    # scraping fail over 4 attempts
+    #items_url ="https://www.leroymerlin.fr/produits/terrasse-jardin/salon-et-mobilier-de-jardin/decouvrez-nos-styles-exterieurs/"
+    #items = get_items(items_url)
+    
+    # try scrape pagination where link don't have
+    #sub_categories = "https://www.leroymerlin.fr/produits/terrasse-jardin/salon-et-mobilier-de-jardin/decouvrez-nos-styles-exterieurs/"
+    #pages = get_pages(sub_categories)
+    
+    # try get pages on bot detection test :
+    # sometimes test apprear randomly, html response find but no pagination
+    bot_url = "https://www.leroymerlin.fr/produits/terrasse-jardin/salon-et-mobilier-de-jardin/fauteuil-de-jardin/?p=2"
+    bot_pages = get_pages(bot_url)
+    
     

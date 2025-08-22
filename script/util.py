@@ -69,3 +69,22 @@ def get_last_path_parts(url: str, n: int = 4):
     # Split path, remove empty elements
     parts = [p for p in parsed.path.split("/") if p]
     return parts[-n:]
+
+
+def is_html(txt_response):
+    """
+    Check if a response is an HTML string.
+    
+    Args:
+        txt_response: Response content
+    
+    Returns:
+        bool: True if txt_response is a string starting with '<!DOCTYPE html>' or '<html',
+              False otherwise
+    """
+    if isinstance(txt_response, str) and (
+        txt_response.lstrip().lower().startswith("<!doctype html>") 
+        or txt_response.lstrip().lower().startswith("<html")
+    ):
+        return True
+    return False
