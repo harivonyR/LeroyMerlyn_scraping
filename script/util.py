@@ -27,7 +27,7 @@ def save_html(content: str, filename: str = "output.html"):
 
 def save_csv(data: list[dict], filename: str = "output/output.csv"):
     """
-    Save a list of flat dictionaries into a CSV file.
+    Save a list of flat dictionaries into a CSV file with ";" as default separator.
     
     Args:
         data (list[dict]): List of flat dictionaries
@@ -47,12 +47,11 @@ def save_csv(data: list[dict], filename: str = "output/output.csv"):
     extra_keys = {k for d in data for k in d.keys()} - set(fieldnames)
     fieldnames.extend(extra_keys)
 
-    # Write the CSV file
+    # Write the CSV file with ";" as separator
     with open(filename, mode="w", newline="", encoding="utf-8-sig") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter=";")
         writer.writeheader()
         writer.writerows(data)
-        
         
 def get_last_path_parts(url: str, n: int = 4):
     """
