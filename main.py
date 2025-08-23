@@ -22,6 +22,7 @@ for i in range(len(products_link)):
         # get sub_categories
         sub_categories = get_products(categories_link[j])
 
+        # check : should not loop if get_product return empty list
         for k in range(len(sub_categories)):
             # get page number links of every page in a subcategory
             

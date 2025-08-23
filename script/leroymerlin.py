@@ -5,22 +5,15 @@ Created on Sat Aug 16 16:45:08 2025
 @author: BEST
 """
 
-from script.piloterr import website_crawler, website_unlocker
+from script.piloterr import website_unlocker #website_crawler, 
 from bs4 import BeautifulSoup
-from script.util import get_last_path_parts, is_html
+from script.util import get_last_path_parts, write_log, safe_get #is_html
 import time
 
 
 def get_products(url="https://www.leroymerlin.fr/produits/", retries=4, delay=15):
-    """
-    Fetch product links with retry mechanism :
-        - Attempt scraping until link are fetched,
-        - Rise error if 3 attempts fail
-    """
-    
     for attempt in range(1, retries + 1):
         try:
-            #html_content = website_crawler(url)
             html_content = website_unlocker(url)
             soup = BeautifulSoup(html_content, "html.parser")
 
@@ -34,17 +27,21 @@ def get_products(url="https://www.leroymerlin.fr/produits/", retries=4, delay=15
                 print(f"{url} : {len(links)} products found\n")
                 return links
             else:
-                raise ValueError("[error] : No product links found\n")
+                raise ValueError("No product link found\n")
         
         except Exception as e:
+            # retry until attemps limit reached
             if attempt < retries:
                 print(f"[Attempt] : {attempt} failed : {e}")
                 print(f"[Retrying] : (waiting {delay}s before attempt {attempt+1})")
                 time.sleep(delay)
+            
+            # if attempt fail : return empty array, write error in log
             else:
-                raise ValueError(
-                    f" [Failed] : attempt failed, fetch product links error after {retries} attempts. Last error: {e}"
-                )
+                print(f"[Failed] : error after {retries} attempts. Last error: {e}")
+                # écrire dans log pour analyse après scraping
+                write_log(url, e, log_file="logs/error_log.txt")
+                return []
 
 
 
@@ -95,28 +92,7 @@ def get_pages(sub_categories_url, retries=4, delay=15):
                 print(f"[Failed] Could not fetch product links after {retries} attempts. Last error: {e}")
                 return []
 
-# we need safe_get since items can have some missing information
-def safe_get(item, selector, attr=None, default=""):
-    """
-    Manage exception :
-    - selector : 
-        ("tag", "class") 
-        or ("tag", {"class": "...", "data-cerberus": "..."})
-    - attr : attribute name (ex: "title") or None for .get_text()
-    """
-    tag_name, selector_arg = selector
 
-    if isinstance(selector_arg, dict):
-        tag = item.find(tag_name, attrs=selector_arg)
-    else:  # string or None → géré comme class_
-        tag = item.find(tag_name, class_=selector_arg)
-
-    if not tag:
-        return default
-    if attr:
-        return tag.get(attr, default)
-    
-    return tag.get_text(strip=True)
 
 
 # page_url = "https://www.leroymerlin.fr/marques/naterial/salon-et-mobilier-de-jardin-naterial/?p=1"
@@ -173,8 +149,8 @@ def get_items(page_url,retries=3,delay=10):
             continue
 
 if __name__ == "__main__":
-    #product_url = "https://www.leroymerlin.fr/produits/terrasse-jardin/cloture-grillage-occultation/"
-    #categories = get_products(product_url)
+    product_url = "https://www.leroymerlin.fr/produits/terrasse-jardin/cloture-grillage-occultation/cloture-electrique/"
+    categories = get_products(product_url)
     
     #items_url = "https://www.leroymerlin.fr/marques/naterial/salon-et-mobilier-de-jardin-naterial/?p=1"
     
@@ -188,7 +164,7 @@ if __name__ == "__main__":
     
     # try get pages on bot detection test :
     # sometimes test apprear randomly, html response find but no pagination
-    bot_url = "https://www.leroymerlin.fr/produits/terrasse-jardin/salon-et-mobilier-de-jardin/fauteuil-de-jardin/?p=2"
-    bot_pages = get_pages(bot_url)
+    #bot_url = "https://www.leroymerlin.fr/produits/terrasse-jardin/salon-et-mobilier-de-jardin/fauteuil-de-jardin/?p=2"
+    #bot_pages = get_pages(bot_url)
     
     

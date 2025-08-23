@@ -8,6 +8,30 @@ Created on Sat Aug 16 16:27:12 2025
 import csv
 import os
 from urllib.parse import urlparse
+from datetime import datetime
+
+# we need safe_get since items can have some missing information
+def safe_get(item, selector, attr=None, default=""):
+    """
+    Manage exception :
+    - selector : 
+        ("tag", "class") 
+        or ("tag", {"class": "...", "data-cerberus": "..."})
+    - attr : attribute name (ex: "title") or None for .get_text()
+    """
+    tag_name, selector_arg = selector
+
+    if isinstance(selector_arg, dict):
+        tag = item.find(tag_name, attrs=selector_arg)
+    else:  # string or None → géré comme class_
+        tag = item.find(tag_name, class_=selector_arg)
+
+    if not tag:
+        return default
+    if attr:
+        return tag.get(attr, default)
+    
+    return tag.get_text(strip=True)
 
 def save_html(content: str, filename: str = "output.html"):
     """
@@ -87,3 +111,20 @@ def is_html(txt_response):
     ):
         return True
     return False
+
+
+def write_log(url: str, error: Exception, log_file="error_log.txt"):
+    """
+    Write scraping errors to a log file with date, url, and error message.
+
+    Args:
+        url (str): The URL being scraped.
+        error (Exception): The error/exception encountered.
+        log_file (str): Path of the log file.
+    """
+
+    os.makedirs(os.path.dirname(log_file), exist_ok=True)
+
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(log_file, "a", encoding="utf-8") as f:
+        f.write(f"[{timestamp}] | URL: {url} | ERROR: {str(error)}\n")
