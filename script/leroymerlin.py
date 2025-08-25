@@ -145,7 +145,7 @@ def get_items(page_url,retries=3,delay=10):
         
         except Exception as e:
             # Skip current item and continue
-            print(f"[!] Skipping url {page_url} {i} due to error: {e}")
+            print(f"[!] Skipping url {page_url} due to error: {e}")
             continue
 
 if __name__ == "__main__":
