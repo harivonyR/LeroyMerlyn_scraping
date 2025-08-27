@@ -5,7 +5,7 @@ Created on Sat Aug 16 16:45:08 2025
 @author: BEST
 """
 
-from script.piloterr import website_unlocker #website_crawler, 
+from script.piloterr import website_unlocker #website_crawler,
 from bs4 import BeautifulSoup
 from script.util import get_last_path_parts, write_log, safe_get #is_html
 import time
@@ -145,7 +145,7 @@ def get_items(page_url,retries=3,delay=10):
         
         except Exception as e:
             # Skip current item and continue
-            print(f"[!] Skipping url {page_url} {i} due to error: {e}")
+            print(f"[!] Skipping url {page_url} due to error: {e}")
             continue
 
 if __name__ == "__main__":
