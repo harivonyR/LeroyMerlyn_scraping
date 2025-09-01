@@ -78,11 +78,3 @@ python main.py
 
 - The scraper automatically skips files that already exist in `output/`.  
 - If a subcategory has no pagination, the scraper moves on.  
-- You can uncomment the `tqdm` import in `main.py` to add a progress bar for long runs.
-
----
-
-## Author
-
-**Harivonyratefiarison**  
-Created on *Aug 16, 2025*.
